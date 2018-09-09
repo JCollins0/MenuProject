@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+   <body>
+
+      <table border = 1>
+
+        <tr>
+          {% for header in headers %}
+            <th>{{header}}</th>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td valign="top">
+            <table>
+              {% for key, value in j2data.items() %}
+                <tr>
+                  <th> {{ key }} </th>
+                </tr>
+                {% for val in value %}
+                  <tr>
+                     <td style="text-align: center;"> {{ val }} </td>
+                  </tr>
+                {% endfor %}
+              {% endfor %}
+             </table>
+          </td>
+
+          <td valign="top">
+            <table>
+              {% for key, value in kinsdata.items() %}
+                <tr>
+                  <th> {{ key }} </th>
+                </tr>
+                {% for val in value %}
+                  <tr>
+                     <td style="text-align: center;"> {{ val }} </td>
+                  </tr>
+                {% endfor %}
+              {% endfor %}
+             </table>
+          </td>
+       </tr>
+      </table>
+
+   </body>
+</html>

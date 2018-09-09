@@ -1,0 +1,15 @@
+<form action="http://localhost:5000/menu" method = "POST">
+  <input type="date" name="date">Day<br>
+  <input type="radio" name="meal_time" value="Lunch" checked>Lunch<br>
+  <input type="radio" name="meal_time" value="Lunch">Dinner<br>
+  <input type="submit" value="Submit">
+</form>
+
+<form action="http://localhost:5000/search" method = "POST">
+  <select name=food method="GET" action="/">
+    {% for item in foodlist %}
+    <option value= "{{item}}">{{item}}</option>"
+    {% endfor %}
+  </select>
+  <input type="submit" value="Submit">
+</form>

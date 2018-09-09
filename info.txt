@@ -1,0 +1,17 @@
+http://hf-food.austin.utexas.edu/foodpro/menuSamp2.asp?myaction=read&sName=The+University+of+Texas+at+Austin+-+Housing+and+Dining&dtdate=9%2F14%2F2018&locationNum=12&locationName=%20+++Jester+2nd+Floor+Dining&naFlag=1
+
+
+<divs>
+menusampinstructs <- start of table entry?
+menusampcats  <- category -- breakfast --
+menusamprecipes <- Item
+
+hosting for web app
+https://www.heroku.com/students
+
+eventually...
+store food items in database and
+allow user to search for day that food item will be present
+
+
+dt = 6

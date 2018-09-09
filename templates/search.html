@@ -1,0 +1,30 @@
+
+<div>
+{{food}}
+</div>
+
+{% for loc,val in dateloc.items() %}
+<div>
+  {{loc}}
+  {% for meal,val2 in val.items() %}
+  <div>
+    {{meal}}
+    {% for linedate in val2 %}
+    <div>
+      {% for line,dateval in linedate.items() %}
+      <div>
+        {{line}}
+        {% for date in dateval %}
+        <div>
+          {{date}}
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+{% endfor %}
