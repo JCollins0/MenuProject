@@ -1,8 +1,10 @@
 import requests
+from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 import pprint as PP
 import datetime as Date
 import foodjson
+import re
 
 def get_url(date_arg,loc_arg):
 
@@ -40,67 +42,51 @@ def get_url(date_arg,loc_arg):
     url = 'http://hf-food.austin.utexas.edu/foodpro/menuSamp2.asp?' + vars
     return url
 
-class MyHTMLParser(HTMLParser):
 
-    def __init__(self):
-        super().__init__()
-        self.found_data = False
-        self.found_cat = False
-        self.found_meal = False
-        self.found_instruct=False
-        self.currmeal = ''
-        self.currcat = ''
-        self.map = {}
-        self.skip = False
+def read_html(date_arg,loc_arg):
+    meal_dict = {'Breakfast':{},'Lunch':{}, 'Dinner':{}}
 
-    def handle_starttag(self, tag, attrs):
-        #print("Start tag:", tag)
-        for attr in attrs:
-            if(attr[0] == 'class' and attr[1] == 'menusamprecipes'):
-                self.found_data = True
-            if(attr[0] == 'class' and attr[1] == 'menusampcats'):
-                self.found_cat = True
-            if(attr[0] == 'class' and attr[1] == 'menusampmeals'):
-                self.found_meal = True
-            if(attr[0] == 'class' and attr[1] == 'menusampinstructs'):
-                self.found_instruct = True
-
-
-    def handle_data(self, data):
-        if(self.skip==False):
-            if(self.found_data):
-                # only match specified meal
-                if(self.meal_time == self.currmeal):
-                    #print("Data     :", data)
-                    if(self.map.get(self.currcat) == None):
-                        self.map[self.currcat] = []
-                    self.map[self.currcat].append(data)
-                    self.found_data = False
-            if(self.found_cat):
-                self.found_cat = False
-                self.currcat = data
-            if(self.found_meal):
-                self.found_meal=False
-                self.currmeal = data
-            if(self.found_instruct):
-                self.found_instruct = False
-                if data.strip() == 'No Data Available':
-                    self.skip = True
-
-def read_html(date_arg,loc_arg,meal_time='Lunch'):
     url = get_url(date_arg,loc_arg)
     r = requests.get(url)
 
     #print(r.status_code)
     if(r.status_code == 200):
-        html = r.text
+        soup = BeautifulSoup(r.text, features="html.parser")
 
-    parser = MyHTMLParser()
-    parser.meal_time = meal_time
-    parser.feed(html)
 
-    foodjson.write_json(parser.map)
-    return parser.map
+        REGEXnl  = re.compile("\r|\n|\xa0")
+        REGEXsp = re.compile("(\\s\\s)+")
+        REGEXline = re.compile("(-- [A-Za-z0-9\\s&!@#$%^']+ --?)")
+        meals = soup.find("div", {"class" : "menusampmeals"})
+        if(meals == None):
+            return meal_dict
+        meals = meals.parent.parent.parent.parent.parent.parent.parent.parent
+        # print(meals)
+        meals = filter(lambda x : x is not None and x != "\n", meals.children)
+        meals = list(meals)
+        l = []
+
+
+        for meal in meals:
+            data = re.sub(REGEXnl," ", meal.text.strip())
+            data = re.sub(REGEXsp,"  ", data)
+            lines = re.split(REGEXline, data)
+            line_iter = iter(lines)
+            meal_time = next(line_iter).strip()
+            meal_dict[meal_time] = dict()
+
+            try:
+                while(True):
+                    line = next(line_iter)
+                    food = next(line_iter)
+                    meal_dict[meal_time][line] = []
+                    food = filter(lambda x: x.strip() !="", re.split(REGEXsp,food))
+                    food = list(map(lambda x : x.strip(), food))
+                    for food_item in food:
+                        meal_dict[meal_time][line].append(food_item)
+            except StopIteration as e:
+                pass
+    return meal_dict
 
 def command_line():
     J2= 'Jester+2nd+Floor+Dining'
@@ -123,21 +109,9 @@ def command_line():
     print()
     locIndex = input("Enter the number of the location: ")
     location = locations[int(locIndex)]
-    map = read_html('-'.join((year,month,day)),location,'Lunch')
-    print()
+    map = read_html('-'.join((year,month,day)),location)
 
-
-    i = 0
-    for line in map.keys():
-        print("{0}) {1}".format(i,line))
-        i=i+1
-    print()
-    lineIndex = input("Enter the number(s) of the line you want sep. by spaces: ")
-    lineIndex = lineIndex.split(" ")
-    print()
-    for num in lineIndex:
-        PP.pprint(map[list(map.keys())[int(num)]])
-        print("")
+    PP.pprint(map)
 
 
 if __name__ == '__main__':
