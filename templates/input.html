@@ -1,15 +1,44 @@
-<form action="http://localhost:5000/menu" method = "POST">
-  <input type="date" name="date">Day<br>
-  <input type="radio" name="meal_time" value="Lunch" checked>Lunch<br>
-  <input type="radio" name="meal_time" value="Lunch">Dinner<br>
-  <input type="submit" value="Submit">
-</form>
+<html>
 
-<form action="http://localhost:5000/search" method = "POST">
-  <select name=food method="GET" action="/">
-    {% for item in foodlist %}
-    <option value= "{{item}}">{{item}}</option>"
-    {% endfor %}
-  </select>
-  <input type="submit" value="Submit">
-</form>
+  <head>
+    <link rel="stylesheet" href={{ url_for('static',filename='styles/common.css') }}></link>
+    <link rel="stylesheet" href={{ url_for('static',filename='styles/input.css') }}></link>
+  </head>
+
+  <body>
+    <div class="wrapper">
+
+      <div class="view">
+        <form class="viewform" action="http://localhost:5000/menu" method = "POST">
+          <label class="input-wrapper">
+            Day
+            <input type="date" name="date">
+          </label>
+
+          <label class="input-wrapper">
+            <input type="radio" class="radio" name="meal_time" value="Lunch" checked>
+            Lunch
+          </label>
+
+          <label class="input-wrapper">
+            <input type="radio" class="radio" name="meal_time" value="Dinner">
+            Dinner
+          </label>
+
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+
+      <div class="search">
+        <form action="http://localhost:5000/search" method = "POST">
+          <select name=food method="GET" action="/">
+            {% for item in foodlist %}
+            <option value= "{{item}}">{{item}}</option>"
+            {% endfor %}
+          </select>
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
