@@ -11,7 +11,6 @@ def write_json(dictionary={}):
     except Exception as e:
         pass
 
-
     for key in dictionary:
         for val in dictionary[key]:
             if(val not in list and val.strip() != ""):
